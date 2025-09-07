@@ -44,15 +44,29 @@
     iframe.src = url;
     tile.appendChild(iframe);
 
-    // tiny UI always present: some sites cannot be framed (X-Frame-Options/CSP frame-ancestors)
+    // Always provide a way to open real tab where the content script runs
     const ui = document.createElement("div");
     ui.className = "tile-ui";
     const openBtn = document.createElement("button");
     openBtn.className = "btn";
-    openBtn.textContent = "Open in tab";
+    openBtn.textContent = "Open in tab & enable";
     openBtn.addEventListener("click", () => {
-      if (chrome?.tabs?.create) chrome.tabs.create({ url });
-      else window.open(url, "_blank");
+      if (chrome?.tabs?.create) {
+        chrome.tabs.create({ url }, (tab) => {
+          // after tab opens, toggle lens mode
+          setTimeout(
+            () =>
+              chrome.tabs.sendMessage(tab.id, {
+                __fisheye: true,
+                cmd: "toggle-warp",
+              }),
+            800,
+          );
+        });
+      } else {
+        const w = window.open(url, "_blank");
+        // best effort: cannot message across windows without extension API
+      }
     });
     ui.appendChild(openBtn);
     tile.appendChild(ui);
