@@ -1,44 +1,24 @@
 <!doctype html>
-<script>
-const stage = document.getElementById('stage');
-const promptEl = document.getElementById('prompt');
-const urlIn = document.getElementById('url');
-
-
-stage.addEventListener('pointerdown', (e)=>{
-if (e.target !== stage) return; // clicked a tile
-showPrompt(e.clientX, e.clientY);
-});
-
-
-function showPrompt(x,y){ promptEl.style.left=x+'px'; promptEl.style.top=y+'px'; promptEl.style.display='block'; urlIn.value=''; urlIn.focus(); }
-urlIn.addEventListener('keydown', (e)=>{
-if (e.key==='Escape'){ promptEl.style.display='none'; }
-if (e.key==='Enter'){
-const url = urlIn.value.trim() || 'https://example.org/';
-promptEl.style.display='none'; addTile(url);
-}
-});
-
-
-function addTile(url){
-const w = Math.round(innerWidth*0.5), h = Math.round(innerHeight*0.6);
-const x = Math.round((innerWidth-w)/2 + (Math.random()*100-50));
-const y = Math.round((innerHeight-h)/2 + (Math.random()*80-40));
-const tile = document.createElement('div'); tile.className='tile'; Object.assign(tile.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});
-const iframe = document.createElement('iframe'); iframe.src = url; tile.appendChild(iframe); stage.appendChild(tile);
-
-
-// drag by border (16px band)
-let dragging=false, offX=0, offY=0;
-tile.addEventListener('pointerdown', (e)=>{
-const r = tile.getBoundingClientRect();
-const nearEdge = (e.clientX < r.left+16 || e.clientX > r.right-16 || e.clientY < r.top+16 || e.clientY > r.bottom-16);
-if(!nearEdge) return; dragging=true; offX=e.clientX-r.left; offY=e.clientY-r.top; e.preventDefault();
-});
-window.addEventListener('pointermove', (e)=>{ if(!dragging) return; tile.style.left=(e.clientX-offX)+'px'; tile.style.top=(e.clientY-offY)+'px'; });
-window.addEventListener('pointerup', ()=>{ dragging=false; });
-}
-</script>
-</body>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Fisheye Viewer</title>
+        <link rel="stylesheet" href="viewer.css" />
+    </head>
+    <body>
+        <div id="stage"></div>
+        <div id="prompt" hidden>
+            <input
+                id="url"
+                placeholder="Type URL, Enter to add • Esc to cancel"
+            />
+        </div>
+        <div class="hint">
+            Click empty space → enter URL to add a <b>crumpled page</b>. Grab
+            near a page edge to move it. Inside each page, click to add/move
+            lenses.
+        </div>
+        <script src="viewer.js"></script>
+    </body>
 </html>
