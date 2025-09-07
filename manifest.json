@@ -1,31 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "Fisheye Everywhere",
-  "version": "0.2.0",
-  "description": "Radial multi‑lens warp that distorts visuals AND hit‑testing (true WYSIWYG).",
-  "icons": { "128": "icon128.png" },
+  "name": "Fisheye — Shader Mode",
+  "version": "0.3.1",
+  "description": "Screen‑space fisheye shader overlay with lens handles. No DOM scaling.",
+  "icons": { "128": "icon128.ico" },
   "host_permissions": ["<all_urls>"],
-  "permissions": ["tabs", "scripting"],
-  "background": { "service_worker": "bg.js" },
+  "permissions": ["scripting"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "all_frames": true,
-      "match_about_blank": true,
       "run_at": "document_end",
-      "js": ["warp.js"]
+      "all_frames": false,
+      "js": ["html2canvas.min.js", "shader_warp.js"]
     }
-  ],
-  "action": { "default_title": "Fisheye Everywhere" },
-  "commands": {
-    "toggle-warp": {
-      "suggested_key": { "default": "Alt+W" },
-      "description": "Toggle lens mode on this tab"
-    },
-    "add-lens": {
-      "suggested_key": { "default": "Alt+L" },
-      "description": "Add a lens at the current cursor"
-    }
-  },
-  "options_page": "viewer.html"
+  ]
 }
